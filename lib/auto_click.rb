@@ -3,89 +3,155 @@ require 'auto_click/input_structure'
 require 'auto_click/virtual_key'
 require 'auto_click/user32'
 
+
 module AutoClick
   @@rightdown = InputStructure.mouse_input(0,0,0,0x0008)
-  @@rightup = InputStructure.mouse_input(0,0,0,0x0010)  
+  @@rightup = InputStructure.mouse_input(0,0,0,0x0010)
   @@leftdown = InputStructure.mouse_input(0,0,0,0x0002)
   @@leftup = InputStructure.mouse_input(0,0,0,0x0004)
   @@middledown = InputStructure.mouse_input(0,0,0,0x0020)
   @@middleup = InputStructure.mouse_input(0,0,0,0x0040)
   
   
-  def send_input(inputs)
+  def input_send(inputs)
     n = inputs.size
     ptr = inputs.collect {|i| i.to_s}.join
     User32.SendInput(n, ptr, inputs[0].size)    
   end
+  
+  def screen_resolution()
+	screen= Array.new(2)
+	usr32=Fiddle::dlopen("user32")
+	gsm=Fiddle::Function.new(usr32["GetSystemMetrics"],[Fiddle::TYPE_LONG],Fiddle::TYPE_LONG)
+	screen[0]= gsm.call(0)
+	screen[1]= gsm.call(1)
+    return screen
+  end
 
+  def mouse_set(x,y)
+    User32.SetCursorPos(x,y)
+  end
+  
+  def mouse_pset(x,y)
+	screen= screen_resolution()
+	x= x.to_f
+	y= y.to_f
+	
+	desX= (screen[0]*(x/100.0)).to_f
+	desY= (screen[1]*(y/100.0)).to_f
+	desX= desX.round
+	desY= desY.round
+	
+    User32.SetCursorPos(desX,desY)
+  end
+  
+  def mouse_pixel_absolute(x,y)
+    User32.SetCursorPos(x,y)
+  end
+  
+  def mouse_pmove(x,y)
+	screen= screen_resolution()
+	x= x.to_f
+	y= y.to_f
+	
+	desX= (screen[0]*(x/100.0)).to_f
+	desY= (screen[1]*(y/100.0)).to_f
+	desX= desX.round
+	desY= desY.round
+	
+	currentX= mouse_position[0]
+	currentY= mouse_position[1]
+	
+	while(currentX != desX)
+		if(currentX < desX)
+			currentX= mouse_position[0]+ 1
+		else
+			currentX= mouse_position[0]- 1
+		end
+		mouse_set(currentX, currentY)
+		sleep(0.0012)
+	end
+	
+	while currentY != desY	
+		if(currentY < desY)
+			currentY= mouse_position[1]+ 1
+		else
+			currentY= mouse_position[1]- 1
+		end
+		mouse_set(currentX, currentY)
+		sleep(0.0012)
+	end
+	puts("FINAL POSITION: \nx:"+ currentX.to_s + " Y:"+ currentY.to_s)
+  end
+  
   def mouse_move(x,y)
-    User32.SetCursorPos(x,y)
-  end
-  
-  def mouse_move_pixel_absolute(x,y)
-    User32.SetCursorPos(x,y)
-  end
-  
-  def mouse_move_percentage_relative_virtual(x,y) # broken
-    move = InputStructure.mouse_input(x,y,0,0x0001)
-    send_input( [move])
-  end
-  
-  def mouse_move_percentage_relative_real(x,y)  # broken
-    move = InputStructure.mouse_input(x,y,0,0x4001)
-    send_input( [move])
-  end
-  
-  def mouse_move_percentage_absolute_virtual(x,y)
-    move = InputStructure.mouse_input(x*65536,y*65536,0,0xc001)
-    send_input( [move])
-  end
-  
-  def mouse_move_percentage_absolute_real(x,y)
-    move = InputStructure.mouse_input(x*65536,y*65536,0,0x8001)
-    send_input( [move])
+	currentX= mouse_position[0]
+	currentY= mouse_position[1]
+	desX= y
+	desY= x
+	
+	while(currentX != desX)
+		if(currentX < desX)
+			currentX= mouse_position[0]+ 1
+		else
+			currentX= mouse_position[0]- 1
+		end
+		mouse_set(currentX, currentY)
+		sleep(0.0012)
+	end
+	
+	while currentY != desY	
+		if(currentY < desY)
+			currentY= mouse_position[1]+ 1
+		else
+			currentY= mouse_position[1]- 1
+		end
+		mouse_set(currentX, currentY)
+		sleep(0.0012)
+	end
+	#puts("FINAL POSITION: \nx:"+ currentX.to_s + " Y:"+ currentY.to_s)
   end
     
-  def right_click
-    send_input( [@@rightdown, @@rightup] )
+  def mouse_Rclick
+    input_send( [@@rightdown, @@rightup] )
   end
   
-  def left_click
-    send_input( [@@leftdown, @@leftup] )
+  def mouse_Lclick(num)
+	i= 0
+	while(i<num)
+		input_send( [@@leftdown, @@leftup] )
+		i+= 1
+		sleep(0.001)
+	end
   end
   
-  def middle_click
-    send_input( [@@middledown, @@middleup] )
+  def mouse_Mclick
+    input_send( [@@middledown, @@middleup] )
   end
   
   def mouse_down(button_name)
     case button_name
     when :right
-      send_input( [@@rightdown] )
+      input_send( [@@rightdown] )
     when :middle
-      send_input( [@@middledown] )  
+      input_send( [@@middledown] )  
     else
-      send_input( [@@leftdown] )
+      input_send( [@@leftdown] )
     end
   end
   
   def mouse_up(button_name)
     case button_name
     when :right
-      send_input( [@@rightup] )
+      input_send( [@@rightup] )
     when :middle
-      send_input( [@@middleup] )  
+      input_send( [@@middleup] )  
     else
-      send_input( [@@leftup] )
+      input_send( [@@leftup] )
     end
-  end  
-  
-  def double_click
-    left_click
-    left_click
   end
   
-  def cursor_position
+  def mouse_position
     point = " " * 8
     User32.GetCursorPos(point)
     point.unpack('LL')  
@@ -93,52 +159,53 @@ module AutoClick
   
   def mouse_scroll(d) 
     scroll = InputStructure.mouse_input(0,0,d*120,0x0800)
-    send_input( [scroll])
+    input_send( [scroll])
   end
   
 
-  def left_drag(sx,sy,ex,ey)
-    mouse_move sx,sy
+  def mouse_Ldrag(sx,sy,ex,ey)
+    mouse sx,sy
     sleep 0.1
-    send_input( [@@leftdown] )
+    input_send( [@@leftdown] )
     sleep 0.1
-    mouse_move ex,ey
+    mouse ex,ey
     sleep 0.1
-    send_input( [@@leftup] )
+    input_send( [@@leftup] )
     sleep 0.1
   end
   
-  def right_drag(sx,sy,ex,ey)
-    mouse_move sx,sy
+  def mouse_Rdrag(sx,sy,ex,ey)
+    mouse sx,sy
     sleep 0.1
-    send_input( [@@rightdown] )
+    input_send( [@@rightdown] )
     sleep 0.1
-    mouse_move ex,ey
+    mouse ex,ey
     sleep 0.1
-    send_input( [@@rightup] )
+    input_send( [@@rightup] )
     sleep 0.1
   end
   
   def key_stroke(key_name)
     code=VirtualKey.code_from_name(key_name)
-    send_input([InputStructure.keyboard_input(code,0x0000),
+    input_send([InputStructure.keyboard_input(code,0x0000),
                 InputStructure.keyboard_input(code,0x0002)])
   end
   
   def key_down(key_name)
     code=VirtualKey.code_from_name(key_name)
-    send_input([InputStructure.keyboard_input(code,0x0000)])
+    input_send([InputStructure.keyboard_input(code,0x0000)])
   end
   
   def key_up(key_name)
     code=VirtualKey.code_from_name(key_name)
-    send_input([InputStructure.keyboard_input(code,0x0002)])
+    input_send([InputStructure.keyboard_input(code,0x0002)])
   end
   
-  def type(string)
-    key_stroke(:capslock) if get_key_state(:capslock)==1
+  def keyboard(string)
+    key_stroke(:capslock) if key_state(:capslock)==1
     string=string.to_s
     string.each_char do |c|
+	  sleep(0.12)
       if ('a'..'z').include? c
         key_stroke(c.to_sym)
       elsif ('A'..'Z').include? c
@@ -269,7 +336,7 @@ module AutoClick
     end
   end
   
-  def get_key_state(key_name)
+  def key_state(key_name)
     code=VirtualKey.code_from_name(key_name)
     User32.GetKeyState(code)
     # For normal keys (such as a)
