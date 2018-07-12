@@ -24,7 +24,7 @@ To smoothly move the mouse cursor to 50% of the width and 50% of the hieght of t
   mouse_pmove(50,50) #percent move
   right_click
   
- To "teleport" the mouse cursor to 50,50 ( the top left corner is 0,0) and perform a double left click:
+To "teleport" the mouse cursor to 50,50 ( the top left corner is 0,0) and perform a double left click:
 
   mouse_set(50,50)
   mouse_Lclick(2)
@@ -194,8 +194,6 @@ There are some methods which are not discussed here. Please see the following Me
 - key_up(key_name)
 
 == To Do List
-
-- Add options of movement speed of mouse so the cursor is actually "moving" instead of just show up at the destination instantly 
 
 - GetWindow and GetWindowFocus Method
 
