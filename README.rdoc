@@ -204,7 +204,7 @@ There are some methods which are not discussed here. Please see the following Me
 == Change log 
 (for full change log please refer to the CHANGELOG file in the repository) 
 
-- 0.3.2 Update to work with Ruby 2.4 and overhaul of naming scheme with added functionality
+- 0.3.2 Update to work with Ruby 2.3.3 and overhaul of naming scheme with added functionality
 
 - 0.1.15 Add more general mouse control methods: mouse_down(button_name), mouse_up(button_name)
 
@@ -224,7 +224,7 @@ There are some methods which are not discussed here. Please see the following Me
  
 == Tested with
 
-- Ruby 2.4.0, Windows 10
+- Ruby 2.3.3, Windows 10
 
 - Ruby 1.9.1-p430, Windows 7
 
