@@ -32,7 +32,7 @@ module AutoClick
     User32.SetCursorPos(x,y)
   end
   
-  def mouse_pset(x,y)
+  def mouse_Pset(x,y)
 	screen= screen_resolution()
 	x= x.to_f
 	y= y.to_f
@@ -45,11 +45,7 @@ module AutoClick
     User32.SetCursorPos(desX,desY)
   end
   
-  def mouse_pixel_absolute(x,y)
-    User32.SetCursorPos(x,y)
-  end
-  
-  def mouse_pmove(x,y)
+  def mouse_Pmove(x,y)
 	screen= screen_resolution()
 	x= x.to_f
 	y= y.to_f

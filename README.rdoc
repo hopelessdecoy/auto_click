@@ -7,6 +7,7 @@ Smulating mouse click, cursor movement and keystrokes
 To install auto_click:
 
   gem install auto_click
+Then download my fixes and expansion and replace the entire auto_click directory in your Ruby Gems location!
 
 == Basic Usage
 
@@ -22,7 +23,7 @@ To smoothly move the mouse cursor to 50,50 ( the top left corner is 0,0) and per
 To smoothly move the mouse cursor to 50% of the width and 50% of the hieght of the screen and perform a right click:
 
   mouse_pmove(50,50) #percent move
-  right_click
+  mouse_Rclick(2)
   
 To "teleport" the mouse cursor to 50,50 ( the top left corner is 0,0) and perform a double left click:
 
@@ -32,7 +33,7 @@ To "teleport" the mouse cursor to 50,50 ( the top left corner is 0,0) and perfor
 To "teleport" the mouse cursor to to 50% of the width and 50% of the hieght of the screen and perform a right click:
 
   mouse_pset(50,50) #percent set
-  right_click
+  mouse_Rclick(2)
   
 To scroll up (forward) 10 wheel steps:
   
